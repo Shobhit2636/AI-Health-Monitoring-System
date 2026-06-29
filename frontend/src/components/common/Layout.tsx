@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Activity, Brain, FileText, MessageCircle,
   Bell, UserCircle, Stethoscope, Shield, LogOut, Heart, Menu, X
 } from "lucide-react";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../../store/authStore";
 
 const NAV_ITEMS = [
   { to: "/dashboard",    icon: LayoutDashboard, label: "Dashboard",      roles: ["patient", "doctor", "admin"] },
