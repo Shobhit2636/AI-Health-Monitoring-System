@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component, ReactNode } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
@@ -14,47 +14,90 @@ import Notifications from "./pages/Notifications";
 import DoctorPortal from "./pages/DoctorPortal";
 import AdminPortal from "./pages/AdminPortal";
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+// ─── Error Boundary ──────────────────────────────────────────
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error: string }
+> {
+  state = { hasError: false, error: "" };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error("App Error:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Kuch problem aayi</h2>
+            <p className="text-sm text-gray-500 mb-4">{this.state.error}</p>
+            <button
+              onClick={() => { this.setState({ hasError: false }); window.location.href = "/dashboard"; }}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700"
+            >
+              Dashboard pe wapas jao
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ─── Route Guards ────────────────────────────────────────────
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
-function PublicRoute({ children }: { children: React.ReactNode }) {
+function PublicRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
 }
 
+// ─── App ─────────────────────────────────────────────────────
 export default function App() {
   return (
-    <BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: { fontSize: "13px", borderRadius: "10px" },
-        }}
-      />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login"    element={<PublicRoute><Auth mode="login" /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><Auth mode="register" /></PublicRoute>} />
-        <Route path="/"         element={<Navigate to="/dashboard" replace />} />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: { fontSize: "13px", borderRadius: "10px" },
+          }}
+        />
+        <Routes>
+          {/* Public */}
+          <Route path="/login"    element={<PublicRoute><Auth mode="login" /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Auth mode="register" /></PublicRoute>} />
+          <Route path="/"         element={<Navigate to="/dashboard" replace />} />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route path="/dashboard"     element={<Dashboard />} />
-          <Route path="/records"       element={<HealthRecords />} />
-          <Route path="/predictions"   element={<Predictions />} />
-          <Route path="/reports"       element={<Reports />} />
-          <Route path="/chatbot"       element={<Chatbot />} />
-          <Route path="/profile"       element={<Profile />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/doctor"        element={<DoctorPortal />} />
-          <Route path="/admin"         element={<AdminPortal />} />
-        </Route>
+          {/* Protected */}
+          <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+            <Route path="/dashboard"     element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+            <Route path="/records"       element={<ErrorBoundary><HealthRecords /></ErrorBoundary>} />
+            <Route path="/predictions"   element={<ErrorBoundary><Predictions /></ErrorBoundary>} />
+            <Route path="/reports"       element={<ErrorBoundary><Reports /></ErrorBoundary>} />
+            <Route path="/chatbot"       element={<ErrorBoundary><Chatbot /></ErrorBoundary>} />
+            <Route path="/profile"       element={<ErrorBoundary><Profile /></ErrorBoundary>} />
+            <Route path="/notifications" element={<ErrorBoundary><Notifications /></ErrorBoundary>} />
+            <Route path="/doctor"        element={<ErrorBoundary><DoctorPortal /></ErrorBoundary>} />
+            <Route path="/admin"         element={<ErrorBoundary><AdminPortal /></ErrorBoundary>} />
+          </Route>
 
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

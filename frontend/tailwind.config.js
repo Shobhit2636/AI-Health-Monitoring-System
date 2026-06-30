@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
@@ -10,13 +13,6 @@ export default {
           500: "#3b82f6",
           600: "#2563eb",
           700: "#1d4ed8",
-          900: "#1e3a8a",
-        },
-        health: {
-          green: "#10b981",
-          red: "#ef4444",
-          yellow: "#f59e0b",
-          purple: "#8b5cf6",
         },
       },
       fontFamily: {
@@ -25,4 +21,4 @@ export default {
     },
   },
   plugins: [],
-};
+}
