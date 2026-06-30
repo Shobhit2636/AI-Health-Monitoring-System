@@ -7,15 +7,15 @@ import {
 import { useAuthStore } from "../../store/authStore";
 
 const NAV_ITEMS = [
-  { to: "/dashboard",    icon: LayoutDashboard, label: "Dashboard",      roles: ["patient", "doctor", "admin"] },
-  { to: "/records",      icon: Activity,        label: "Health Records", roles: ["patient"] },
-  { to: "/predictions",  icon: Brain,           label: "AI Predictions", roles: ["patient"] },
-  { to: "/reports",      icon: FileText,        label: "Medical Reports",roles: ["patient"] },
-  { to: "/chatbot",      icon: MessageCircle,   label: "Health Chat",    roles: ["patient", "doctor", "admin"] },
-  { to: "/doctor",       icon: Stethoscope,     label: "Doctor Portal",  roles: ["doctor"] },
-  { to: "/admin",        icon: Shield,          label: "Admin Portal",   roles: ["admin"] },
-  { to: "/notifications",icon: Bell,            label: "Notifications",  roles: ["patient", "doctor", "admin"] },
-  { to: "/profile",      icon: UserCircle,      label: "Profile",        roles: ["patient", "doctor", "admin"] },
+  { to: "/dashboard",     icon: LayoutDashboard, label: "Dashboard",       roles: ["patient","doctor","admin"] },
+  { to: "/records",       icon: Activity,        label: "Health Records",  roles: ["patient"] },
+  { to: "/predictions",   icon: Brain,           label: "AI Predictions",  roles: ["patient"] },
+  { to: "/reports",       icon: FileText,        label: "Medical Reports", roles: ["patient"] },
+  { to: "/chatbot",       icon: MessageCircle,   label: "Health Chat",     roles: ["patient","doctor","admin"] },
+  { to: "/doctor",        icon: Stethoscope,     label: "Doctor Portal",   roles: ["doctor"] },
+  { to: "/admin",         icon: Shield,          label: "Admin Portal",    roles: ["admin"] },
+  { to: "/notifications", icon: Bell,            label: "Notifications",   roles: ["patient","doctor","admin"] },
+  { to: "/profile",       icon: UserCircle,      label: "Profile",         roles: ["patient","doctor","admin"] },
 ];
 
 export default function Layout() {
@@ -23,17 +23,12 @@ export default function Layout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
+  const handleLogout = () => { logout(); navigate("/login"); };
   const userRole = user?.role || "patient";
-  const visibleNav = NAV_ITEMS.filter((item) => item.roles.includes(userRole));
+  const visibleNav = NAV_ITEMS.filter(item => item.roles.includes(userRole));
 
   const SidebarContent = () => (
     <>
-      {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
         <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
           <Heart size={18} className="text-white" />
@@ -44,7 +39,6 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {visibleNav.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -65,7 +59,6 @@ export default function Layout() {
         ))}
       </nav>
 
-      {/* User + Logout */}
       <div className="p-3 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2 mb-1">
           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm flex-shrink-0">
@@ -93,15 +86,12 @@ export default function Layout() {
         <SidebarContent />
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
           <aside className="relative z-50 w-56 bg-white flex flex-col shadow-xl">
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="absolute top-3 right-3 p-1.5 hover:bg-gray-100 rounded-lg text-gray-500"
-            >
+            <button onClick={() => setSidebarOpen(false)} className="absolute top-3 right-3 p-1.5 hover:bg-gray-100 rounded-lg text-gray-500">
               <X size={18} />
             </button>
             <SidebarContent />
@@ -124,7 +114,6 @@ export default function Layout() {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-5 lg:p-7">
           <Outlet />
         </main>

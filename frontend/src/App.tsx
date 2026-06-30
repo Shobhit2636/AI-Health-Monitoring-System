@@ -11,10 +11,8 @@ import Reports from "./pages/Reports";
 import Chatbot from "./pages/Chatbot";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
-
-// Lazy pages (lower priority)
-const DoctorPortal = React.lazy(() => import("./pages/DoctorPortal"));
-const AdminPortal = React.lazy(() => import("./pages/AdminPortal"));
+import DoctorPortal from "./pages/DoctorPortal";
+import AdminPortal from "./pages/AdminPortal";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -37,12 +35,12 @@ export default function App() {
         }}
       />
       <Routes>
-        {/* Public */}
+        {/* Public Routes */}
         <Route path="/login"    element={<PublicRoute><Auth mode="login" /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Auth mode="register" /></PublicRoute>} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/"         element={<Navigate to="/dashboard" replace />} />
 
-        {/* Protected */}
+        {/* Protected Routes */}
         <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route path="/dashboard"     element={<Dashboard />} />
           <Route path="/records"       element={<HealthRecords />} />
@@ -51,16 +49,8 @@ export default function App() {
           <Route path="/chatbot"       element={<Chatbot />} />
           <Route path="/profile"       element={<Profile />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/doctor"        element={
-            <React.Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"/></div>}>
-              <DoctorPortal />
-            </React.Suspense>
-          }/>
-          <Route path="/admin" element={
-            <React.Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"/></div>}>
-              <AdminPortal />
-            </React.Suspense>
-          }/>
+          <Route path="/doctor"        element={<DoctorPortal />} />
+          <Route path="/admin"         element={<AdminPortal />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
