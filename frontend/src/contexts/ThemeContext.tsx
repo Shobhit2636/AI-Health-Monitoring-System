@@ -13,19 +13,36 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isDark, setIsDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    // Check localStorage first
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved === "dark";
+    // Check system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
+    const root = document.documentElement;
     if (isDark) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
+      root.style.colorScheme = "light";
       localStorage.setItem("theme", "light");
     }
   }, [isDark]);
+
+  // Apply on mount immediately to prevent flash
+  useEffect(() => {
+    const root = document.documentElement;
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") {
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
+    }
+  }, []);
 
   const toggleTheme = () => setIsDark((prev) => !prev);
 
